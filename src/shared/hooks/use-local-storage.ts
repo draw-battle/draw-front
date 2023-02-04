@@ -1,32 +1,43 @@
 import { useState } from "react";
 
-export function useLocalStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState<T>(() => {
+export const useLocalStorage = <T>(
+  key: string,
+  initialValue: string
+): [T, typeof setValue] => {
+  // State to store our value
+  // Pass initial state function to useState so logic is only executed once
+  const [storedValue, setStoredValue] = useState<string>(() => {
     if (typeof window === "undefined") {
       return initialValue;
     }
 
     try {
+      // Get from local storage by key
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      // Parse stored json or if none return initialValue
+      return item ? item : initialValue;
     } catch (error) {
+      // If error also return initialValue
       console.log(error);
       return initialValue;
     }
   });
 
-  const setValue = (value: T | ((val: T) => T)) => {
+  // Return a wrapped version of useState's setter function that ...
+  // ... persists the new value to localStorage.
+  const setValue = (value: T) => {
     try {
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
+      // Save state
+      setStoredValue(value as string);
+      // Save to local storage
       if (typeof window !== "undefined") {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        window.localStorage.setItem(key, value as string);
       }
     } catch (error) {
+      // A more advanced implementation would handle the error case
       console.log(error);
     }
   };
 
-  return [storedValue, setValue] as const;
-}
+  return [storedValue as T, setValue];
+};
