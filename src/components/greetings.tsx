@@ -14,10 +14,7 @@ const UsernameModal = dynamic(() =>
 );
 
 export const Greetings = () => {
-  const [username, setUsername] = useLocalStorage<string>(
-    "username",
-    "Stranger"
-  );
+  const [username, setUsername] = useLocalStorage<string>("username", "");
   const { setModals } = useContext(ModalsContext);
 
   const onUsernameSet = (username: string) => {
@@ -27,24 +24,27 @@ export const Greetings = () => {
   return (
     <div className="flex justify-between gap-2">
       <div>
-        <h1 className="text-2xl">Welcome, {username}</h1>
+        <h1 className="text-2xl">Welcome, {username || "Stranger"}</h1>
       </div>
 
-      <div className="flex items-center gap-2 divide-x-2 divide-solid">
-        <div className="flex items-center gap-2">
-          <Status type="warning" />
-          <p>At least</p>
-          <Button
-            variant="link"
-            onClick={() =>
-              setModals((modals) => ({ ...modals, username: true }))
-            }
-          >
-            set your name
-          </Button>
-          <p>in order to play!</p>
+      {!username && (
+        <div className="flex items-center gap-2 divide-x-2 divide-solid">
+          <div className="flex items-center gap-2">
+            <Status type="warning" />
+
+            <p>At least</p>
+            <Button
+              variant="link"
+              onClick={() =>
+                setModals((modals) => ({ ...modals, username: true }))
+              }
+            >
+              set your name
+            </Button>
+            <p>in order to play!</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <UsernameModal onUsernameSet={onUsernameSet} />
     </div>
