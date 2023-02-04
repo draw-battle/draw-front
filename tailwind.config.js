@@ -15,6 +15,7 @@ module.exports = {
       colors: {
         body: "#0c0c0c",
         primary: colors.neutral[200],
+        "half-black": "rgba(0,0,0,.50)",
       },
     },
   },
