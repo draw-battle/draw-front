@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocalStorage } from "@/shared/hooks/use-local-storage";
+import { Button } from "@/shared/ui/button";
 import { Status } from "@/shared/ui/status";
 
 export const Greetings = () => {
@@ -15,9 +16,9 @@ export const Greetings = () => {
       <div className="flex items-center gap-2 divide-x-2 divide-solid">
         <div className="flex items-center gap-2">
           <Status type="warning" />
-          <p className="align-bottom">
-            At least set your name in order to play!
-          </p>
+          <p>At least</p>
+          <Button variant="link">set your name</Button>
+          <p>in order to play!</p>
         </div>
       </div>
     </div>
