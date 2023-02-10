@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Brush } from "../logic/brush";
 import { Tool } from "../logic/tool";
 import { Toolbar } from "./toolbar";
 
 export const Canvas = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [tool, setTool] = useState<Tool | null>(null);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -16,7 +18,12 @@ export const Canvas = () => {
   return (
     <div className="flex relative">
       <div className="absolute top-0 w-full flex">
-        <Toolbar />
+        <Toolbar
+          title="brush"
+          onSelect={() =>
+            setTool(canvasRef.current && new Brush(canvasRef.current))
+          }
+        />
       </div>
 
       <div className=" absolute w-full top-14">
