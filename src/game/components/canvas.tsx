@@ -1,18 +1,32 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { Tool } from "../logic/tool";
 import { Toolbar } from "./toolbar";
 
 export const Canvas = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      new Tool(canvasRef.current);
+    }
+  });
+
   return (
-    <div className="w-[1170px] h-[860px] relative">
-      <div className="absolute z-50 w-full h-full">
-        <div className="flex border-b border-primary">
-          <Toolbar />
-        </div>
+    <div className="flex relative">
+      <div className="absolute top-0 w-full flex">
+        <Toolbar />
       </div>
-      <canvas
-        width={1170}
-        height={860}
-        className="w-[1170px] h-[860px] absolute border border-primary"
-      />
+
+      <div className=" absolute w-full top-14">
+        <canvas
+          width={1060}
+          height={800}
+          className="block border border-primary"
+          ref={canvasRef}
+        ></canvas>
+      </div>
     </div>
   );
 };
