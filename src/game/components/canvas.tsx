@@ -6,9 +6,21 @@ import { Rect } from "../logic/rect";
 import { Tool } from "../logic/tool";
 import { Toolbar } from "./toolbar";
 
+type OnSetTool = {
+  toolName: "brush" | "rectangle";
+  Tool: Tool;
+};
+
 export const Canvas = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [tool, setTool] = useState<Tool | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [tool, setTool] = useState<OnSetTool | null>(null);
+
+  const onSetTool = ({ Tool, toolName }: OnSetTool) => {
+    setTool({
+      Tool,
+      toolName,
+    });
+  };
 
   return (
     <div className="relative flex">
@@ -16,19 +28,27 @@ export const Canvas = () => {
         <Toolbar
           title="brush"
           onSelect={() =>
-            setTool(canvasRef.current && new Brush(canvasRef.current))
+            onSetTool({
+              Tool: new Brush(canvasRef.current!),
+              toolName: "brush",
+            })
           }
+          active={tool?.toolName === "brush"}
         />
 
         <Toolbar
           title="rect"
           onSelect={() =>
-            setTool(canvasRef.current && new Rect(canvasRef.current))
+            onSetTool({
+              Tool: new Rect(canvasRef.current!),
+              toolName: "rectangle",
+            })
           }
+          active={tool?.toolName === "rectangle"}
         />
       </div>
 
-      <div className="absolute w-full  top-14">
+      <div className="absolute w-full top-14">
         <canvas
           width={1060}
           height={800}
