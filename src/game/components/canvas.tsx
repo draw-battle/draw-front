@@ -5,6 +5,7 @@ import { Brush } from "../logic/brush";
 import { Rect } from "../logic/rect";
 import { Tool } from "../logic/tool";
 import { Toolbar } from "./toolbar";
+import Image from "next/image";
 
 type OnSetTool = {
   toolName: "brush" | "rectangle";
@@ -26,7 +27,14 @@ export const Canvas = () => {
     <div className="relative flex">
       <div className="absolute top-0 flex w-full">
         <Toolbar
-          title="brush"
+          title={
+            <Image
+              src="assets/svgs/brush.svg"
+              width={30}
+              height={30}
+              alt="brush"
+            />
+          }
           onSelect={() =>
             onSetTool({
               Tool: new Brush(canvasRef.current!),

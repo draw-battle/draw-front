@@ -1,7 +1,8 @@
 import classNames from "classnames";
+import { ReactNode } from "react";
 
 type ToolbarProps = {
-  title: string;
+  title: ReactNode;
   onSelect: () => void;
   active?: boolean;
 };
