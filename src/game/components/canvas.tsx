@@ -4,11 +4,12 @@ import { useRef, useState } from "react";
 import { Brush } from "../logic/brush";
 import { Rect } from "../logic/rect";
 import { Tool } from "../logic/tool";
+import { Eraser } from "../logic/eraser";
 import { Toolbar } from "./toolbar";
 import Image from "next/image";
 
 type OnSetTool = {
-  toolName: "brush" | "rectangle";
+  toolName: "brush" | "rectangle" | "eraser";
   Tool: Tool;
 };
 
@@ -53,6 +54,17 @@ export const Canvas = () => {
             })
           }
           active={tool?.toolName === "rectangle"}
+        />
+
+        <Toolbar
+          title="Eraser"
+          onSelect={() =>
+            onSetTool({
+              Tool: new Eraser(canvasRef.current!),
+              toolName: "eraser",
+            })
+          }
+          active={tool?.toolName === "eraser"}
         />
       </div>
 
