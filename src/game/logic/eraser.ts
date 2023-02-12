@@ -32,8 +32,8 @@ export class Eraser extends Tool {
   }
 
   draw(x: number, y: number) {
-    this.strokeColor = BG_COLOR;
+    this.fillColor = BG_COLOR;
     this.ctx.lineTo(x, y);
-    this.ctx.stroke();
+    this.ctx.fill();
   }
 }
