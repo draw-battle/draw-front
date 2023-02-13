@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Brush } from "../logic/brush";
 import { Rect } from "../logic/rect";
 import { Tool } from "../logic/tool";
@@ -24,9 +24,16 @@ export const Canvas = () => {
     });
   };
 
+  useEffect(() => {
+    if (canvasRef.current) {
+      canvasRef.current.width = window.innerWidth;
+      canvasRef.current.height = window.innerHeight;
+    }
+  }, []);
+
   return (
-    <div className="relative flex">
-      <div className="absolute top-0 flex w-full">
+    <div>
+      <div className="absolute top-0 z-20 flex">
         <Toolbar
           title={
             <Image
@@ -68,13 +75,8 @@ export const Canvas = () => {
         />
       </div>
 
-      <div className="absolute w-full top-14">
-        <canvas
-          width={1060}
-          height={800}
-          className="block border border-primary"
-          ref={canvasRef}
-        ></canvas>
+      <div className="absolute inset-0">
+        <canvas className="block w-full h-full" ref={canvasRef}></canvas>
       </div>
     </div>
   );
