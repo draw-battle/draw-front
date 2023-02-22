@@ -3,14 +3,15 @@ import { Status } from "@/shared/ui/status";
 
 type CardProps = {
   title: string;
+  id: string;
 };
 
-export function Card({ title }: CardProps) {
+export function Card({ title, id }: CardProps) {
   return (
     <div className="flex justify-between p-2 duration-100 cursor-pointer hover:bg-neutral-600">
       {/* Game name */}
       <div className="w-fit">
-        <Link href="https://youtube.com">{title}</Link>
+        <Link href={id}>{title}</Link>
       </div>
 
       {/* Meta Info */}
