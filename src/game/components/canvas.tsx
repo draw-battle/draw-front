@@ -29,6 +29,11 @@ export const Canvas = () => {
       canvasRef.current.width = window.innerWidth;
       canvasRef.current.height = window.innerHeight;
     }
+
+    onSetTool({
+      Tool: new Brush(canvasRef.current!),
+      toolName: "brush",
+    });
   }, []);
 
   return (

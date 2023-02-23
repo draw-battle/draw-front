@@ -2,9 +2,11 @@
 
 import { Canvas } from "@/game/components/canvas";
 import { Chat } from "@/game/components/chat";
+import { Toast } from "@/shared/ui/toast";
+import { useMessagesStore } from "@/store/messages-state";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
-import { io } from "socket.io-client";
+import { useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
 export default function Game() {
   const pathname = usePathname();
@@ -12,18 +14,28 @@ export default function Game() {
   // TODO: Find better solution to get id query. (useRouter is throwing error in this version of next.)
   const id = pathname?.replace("/", "");
 
+  const addMessage = useMessagesStore((state) => state.addMessage);
   useConnectToRoom({
     roomId: id as string,
-    onUserLeave: (username) => {
-      console.log(`${username} left the room`);
+    onUserLeave(username) {
+      addMessage({
+        author: "system",
+        body: `${username} has left.`,
+        status: "error",
+      });
     },
-    onUserNew: (username) => {
-      console.log("NEW USER CAME ON ME!!! PLEASE WELCOME " + username);
+    onUserNew(username) {
+      addMessage({
+        author: "system",
+        body: `User ${username} has entered the room.`,
+        status: "success",
+      });
     },
   });
 
   return (
     <div className="relative flex w-full h-screen gap-3 py-12 mx-auto">
+      <Toast status="success" text="hello" />
       <div className="absolute inset-0 flex">
         <Canvas />
       </div>
@@ -47,26 +59,29 @@ const useConnectToRoom = ({
   onUserNew,
 }: IUseConnectToRoom) => {
   useEffect(() => {
-    const socket = io("ws://localhost:5000", {
-      autoConnect: false,
-    });
+    // connection
+    const socket = io("ws://localhost:5000");
 
-    socket.connect();
+    if (socket) {
+      socket.on("connect", () => {
+        socket.emit("join", roomId, "Jamal" + Math.floor(Math.random() * 99));
 
-    socket.on("connect", () => {
-      socket.emit("join", roomId, "Jamal" + Math.floor(Math.random() * 99));
-    });
+        // check if there are enough people to start the game.
+        socket.on("is-enough", (value: boolean) => {
+          console.log("HELLO", value);
+        });
 
-    socket.on("user new", (username) => {
-      onUserNew(username);
-    });
+        socket.on("user new", (username) => {
+          onUserNew(username);
+        });
 
-    socket.on("user left", (username) => {
-      onUserLeave(username);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
+        socket.on("user left", (username) => {
+          onUserLeave(username);
+        });
+      });
+      return () => {
+        socket.disconnect();
+      };
+    }
   }, [onUserLeave, onUserNew, roomId]);
 };
