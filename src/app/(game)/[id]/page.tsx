@@ -14,7 +14,7 @@ export default function Game() {
   const pathname = usePathname();
   const id = pathname?.replace("/", "");
 
-  const [blocked, setBlocked] = useState(false);
+  const [blocked, setBlocked] = useState(true);
   const [timeLeft, setTimeLeft] = useState<number | null>();
 
   const addMessage = useMessagesStore((state) => state.addMessage);
@@ -42,6 +42,16 @@ export default function Game() {
       });
 
       setBlocked(true);
+    },
+
+    onDrawPhaseStart() {
+      addMessage({
+        author: "system",
+        body: "Start drawing!",
+        status: "default",
+      });
+
+      setBlocked(false);
     },
 
     updateTimer(timeLeft) {
@@ -80,6 +90,7 @@ interface IUseConnectToRoom {
   onUserNew: (username: string) => void;
   onUserLeave: (username: string) => void;
   onDrawPhaseEnd: () => void;
+  onDrawPhaseStart: () => void;
   updateTimer: (timeLeft: number) => void;
 }
 
@@ -88,6 +99,7 @@ const useConnectToRoom = ({
   onUserLeave,
   onUserNew,
   onDrawPhaseEnd,
+  onDrawPhaseStart,
   updateTimer,
 }: IUseConnectToRoom) => {
   useEffect(() => {
@@ -100,9 +112,21 @@ const useConnectToRoom = ({
 
         socket.on(
           "draw phase",
-          ({ ended, timeLeft }: { ended: boolean; timeLeft?: number }) => {
+          ({
+            ended,
+            timeLeft,
+            started = false,
+          }: {
+            ended: boolean;
+            timeLeft?: number;
+            started?: boolean;
+          }) => {
             if (ended) {
               onDrawPhaseEnd();
+            }
+
+            if (started) {
+              onDrawPhaseStart();
             }
 
             if (Number.isInteger(timeLeft)) {
