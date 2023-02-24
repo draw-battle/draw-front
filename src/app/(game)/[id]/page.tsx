@@ -11,6 +11,7 @@ import { io, Socket } from "socket.io-client";
 export default function Game() {
   const pathname = usePathname();
   const [blocked, setBlocked] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number | null>();
 
   // TODO: Find better solution to get id query. (useRouter is throwing error in this version of next.)
   const id = pathname?.replace("/", "");
@@ -41,11 +42,18 @@ export default function Game() {
 
       setBlocked(true);
     },
+
+    updateTimer(timeLeft) {
+      console.log(timeLeft);
+      setTimeLeft(timeLeft);
+    },
   });
 
   return (
     <div className="relative flex w-full h-screen gap-3 py-12 mx-auto">
-      <Toast status="success" text="hello" />
+      {Number(timeLeft) > 0 && (
+        <Toast status="info" text={`Timer: ${timeLeft}`} />
+      )}
       <div className="absolute inset-0 flex">
         <Canvas blocked={blocked} />
       </div>
@@ -62,6 +70,7 @@ interface IUseConnectToRoom {
   onUserNew: (username: string) => void;
   onUserLeave: (username: string) => void;
   onDrawPhaseEnd: () => void;
+  updateTimer: (timeLeft: number) => void;
 }
 
 const useConnectToRoom = ({
@@ -69,6 +78,7 @@ const useConnectToRoom = ({
   onUserLeave,
   onUserNew,
   onDrawPhaseEnd,
+  updateTimer,
 }: IUseConnectToRoom) => {
   useEffect(() => {
     // connection
@@ -78,11 +88,18 @@ const useConnectToRoom = ({
       socket.on("connect", () => {
         socket.emit("join", roomId, "Jamal" + Math.floor(Math.random() * 99));
 
-        socket.on("ended", (ended) => {
-          if (ended) {
-            onDrawPhaseEnd();
+        socket.on(
+          "draw phase",
+          ({ ended, timeLeft }: { ended: boolean; timeLeft?: number }) => {
+            if (ended) {
+              onDrawPhaseEnd();
+            }
+
+            if (Number.isInteger(timeLeft)) {
+              updateTimer(timeLeft!);
+            }
           }
-        });
+        );
 
         socket.on("user new", (username) => {
           onUserNew(username);
