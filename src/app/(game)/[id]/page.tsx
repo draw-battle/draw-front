@@ -4,12 +4,15 @@ import { Canvas } from "@/game/components/canvas";
 import { Chat } from "@/game/components/chat";
 import { Toast } from "@/shared/ui/toast";
 import { useMessagesStore } from "@/store/messages-state";
-import { usePathname, useRouter } from "next/navigation";
+import { useUserStore } from "@/store/user-state";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 export default function Game() {
-  const router = useRouter();
+  const username = useUserStore((state) => state.username);
+  console.log(username);
+
   // TODO: Find better solution to get id query. (useRouter is throwing error in this version of next.)
   const pathname = usePathname();
   const id = pathname?.replace("/", "");
@@ -20,6 +23,9 @@ export default function Game() {
   const addMessage = useMessagesStore((state) => state.addMessage);
   useConnectToRoom({
     roomId: id as string,
+    username: `${
+      username ? username : "Jamal" + Math.floor(Math.random() * 99)
+    }`,
     onUserLeave(username) {
       addMessage({
         author: "system",
@@ -87,6 +93,7 @@ export default function Game() {
 
 interface IUseConnectToRoom {
   roomId: string;
+  username: string;
   onUserNew: (username: string) => void;
   onUserLeave: (username: string) => void;
   onDrawPhaseEnd: () => void;
@@ -96,6 +103,7 @@ interface IUseConnectToRoom {
 
 const useConnectToRoom = ({
   roomId,
+  username,
   onUserLeave,
   onUserNew,
   onDrawPhaseEnd,
@@ -108,7 +116,7 @@ const useConnectToRoom = ({
 
     if (socket) {
       socket.on("connect", () => {
-        socket.emit("join", roomId, "Jamal" + Math.floor(Math.random() * 99));
+        socket.emit("join", roomId, username);
 
         socket.on(
           "draw phase",

@@ -4,6 +4,7 @@ import { useLocalStorage } from "@/shared/hooks/use-local-storage";
 import { Button } from "@/shared/ui/button";
 import { Status } from "@/shared/ui/status";
 import { ModalsContext } from "@/store/modals-state";
+import { useUserStore } from "@/store/user-state";
 import dynamic from "next/dynamic";
 import { useContext } from "react";
 
@@ -15,10 +16,12 @@ const UsernameModal = dynamic(() =>
 
 export const Greetings = () => {
   const [username, setUsername] = useLocalStorage<string>("username", "");
+  const updateUsername = useUserStore((state) => state.updateUsername);
   const { setModals } = useContext(ModalsContext);
 
   const onUsernameSet = (username: string) => {
     setUsername(username);
+    updateUsername(username);
   };
 
   return (
