@@ -7,13 +7,14 @@ import { Tool } from "../logic/tool";
 import { Eraser } from "../logic/eraser";
 import { Toolbar } from "./toolbar";
 import Image from "next/image";
+import classNames from "classnames";
 
 type OnSetTool = {
   toolName: "brush" | "rectangle" | "eraser";
   Tool: Tool;
 };
 
-export const Canvas = () => {
+export const Canvas = ({ blocked = false }: { blocked: boolean }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [tool, setTool] = useState<OnSetTool | null>(null);
 
@@ -81,7 +82,12 @@ export const Canvas = () => {
       </div>
 
       <div className="absolute inset-0">
-        <canvas className="block w-full h-full" ref={canvasRef}></canvas>
+        <canvas
+          className={classNames("block w-full h-full", {
+            "pointer-events-none": blocked,
+          })}
+          ref={canvasRef}
+        ></canvas>
       </div>
     </div>
   );
