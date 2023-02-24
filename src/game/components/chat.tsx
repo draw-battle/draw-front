@@ -1,9 +1,12 @@
 import { Input } from "@/shared/ui/input";
 import { IMessage, useMessagesStore } from "@/store/messages-state";
 import classNames from "classnames";
-import { Socket } from "socket.io-client";
 
-export const Chat = () => {
+type ChatProps = {
+  pinned?: IMessage[];
+};
+
+export const Chat = ({ pinned }: ChatProps) => {
   const messages = useMessagesStore((state) => state.messages);
 
   return (
@@ -13,6 +16,19 @@ export const Chat = () => {
       </div>
       <div className="flex flex-col h-full gap-2">
         <div className="flex flex-col justify-end p-2 border border-primary grow">
+          {pinned && (
+            <div className="flex-grow-[inherit]">
+              {pinned.map((p, i) => (
+                <Message
+                  key={i}
+                  author={p.author}
+                  body={p.body}
+                  status={p.status}
+                />
+              ))}
+            </div>
+          )}
+
           {messages.map((m, i) => (
             <Message
               key={i}
